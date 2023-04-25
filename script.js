@@ -107,7 +107,7 @@ setInterval(function () {
   );
   context.fillStyle = "white";
   context.fill();
-}, 1000 / FRAME_PER_SECOND);
+}, 1000 / FRAMES_PER_SECOND);
 
 canvas.onmousedown = () => {
   window.pause = false;
