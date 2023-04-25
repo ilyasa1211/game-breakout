@@ -1,16 +1,17 @@
 const BLOCK_COUNT = 50;
-const FRAME_PER_SECOND = 60;
+const FRAMES_PER_SECOND = 60;
 
+var body = document.body;
 var canvas = document.createElement("canvas");
+var context = canvas.getContext("2d");
+
 canvas.height = innerHeight;
 canvas.width = innerWidth;
 canvas.style.backgroundColor = "rgb(46,46,46)";
-var context = canvas.getContext("2d");
 
-var body = document.body;
 body.appendChild(canvas);
 
-const platform = {
+const PLATFORM = {
   width: 0.2 * canvas.width,
   height: 0.03 * canvas.height,
   initialXPosition: canvas.width / 2 - (0.2 * canvas.width) / 2,
@@ -32,13 +33,11 @@ setInterval(function () {
   if (window.isWin()) {
     clearCanvas();
     insertMessage("You Win! Score: " + score);
-    retry();
     return;
   }
   if (window.gameOver) {
     clearCanvas();
-    insertMessage("You Lose! Score: " + score);
-    retry();
+    insertMessage("You Lose!\nScore: " + score + "\nClick To Play Again!");
     return;
   }
   if (window.pause) {
@@ -50,7 +49,7 @@ setInterval(function () {
   let ballXposition = xVelocity + canvas.width / 2;
   let ballYposition = yVelocity + canvas.height / 2;
   let ballRadius = 0.015 * canvas.height;
-  blocks.forEach((arr, index) => {
+  blocks.forEach((block, index) => {
     let blockWidth = 0.08 * canvas.width;
     let blockHeight = 0.05 * canvas.height;
     let blockXPosition = (index % 10) * 0.1 * canvas.width;
@@ -62,14 +61,14 @@ setInterval(function () {
       ballYposition > blockYPosition &&
       ballYposition < blockYPosition + blockHeight;
     let touchBlock = touchBlockX && touchBlockY;
-    if (arr && touchBlock) {
+    if (block && touchBlock) {
       yAccelerator = -yAccelerator;
       score += 10;
       blocks[index] = 0;
     }
     context.beginPath();
     context.rect(blockXPosition, blockYPosition, blockWidth, blockHeight);
-    context.fillStyle = arr ? `rgb(255, 255, 130)` : "transparent";
+    context.fillStyle = block ? `rgb(255, 255, 130)` : "transparent";
     context.fill();
   });
   context.beginPath();
@@ -82,58 +81,92 @@ setInterval(function () {
   let touchYBorder = ballYposition < 0 + ballRadius / 2;
   let touchVoid = ballYposition > canvas.height - ballRadius / 2;
   let touchPlatform =
-    ballYposition > platform.initialYPosition - ballRadius / 2 &&
+    ballYposition > PLATFORM.initialYPosition - ballRadius / 2 &&
     ballYposition <
-      platform.initialYPosition + platform.height - ballRadius / 2 &&
-    ballXposition > platform.initialXPosition - ballRadius / 2 &&
-    ballXposition < platform.initialXPosition + platform.width - ballRadius / 2;
-  ballXposition < platform.width;
+      PLATFORM.initialYPosition + PLATFORM.height - ballRadius / 2 &&
+    ballXposition > PLATFORM.initialXPosition - ballRadius / 2 &&
+    ballXposition < PLATFORM.initialXPosition + PLATFORM.width - ballRadius / 2;
+  ballXposition < PLATFORM.width;
   if (touchXBorder) xAccelerator = -xAccelerator;
   if (touchVoid) {
     window.gameOver = true;
   }
   if (touchYBorder || touchPlatform) {
     if (touchPlatform)
-      xAccelerator = (platform.centerPlatform - ballXposition) / -10;
+      xAccelerator = (PLATFORM.centerPlatform - ballXposition) / -10;
     yAccelerator = -yAccelerator;
   }
   xVelocity += xAccelerator;
   yVelocity += yAccelerator;
   context.beginPath();
   context.rect(
-    platform.initialXPosition,
-    platform.initialYPosition,
-    platform.width,
-    platform.height
+    PLATFORM.initialXPosition,
+    PLATFORM.initialYPosition,
+    PLATFORM.width,
+    PLATFORM.height
   );
   context.fillStyle = "white";
   context.fill();
 }, 1000 / FRAME_PER_SECOND);
+
 canvas.onmousedown = () => {
   window.pause = false;
+  window.gameOver && setToInitialValue();
   canvas.onmousemove = (e) => {
-    platform.initialXPosition = e.clientX - platform.width / 2;
-    platform.centerPlatform = e.clientX;
+    PLATFORM.initialXPosition = e.clientX - PLATFORM.width / 2;
+    PLATFORM.centerPlatform = e.clientX;
   };
 };
+
 canvas.onmouseleave = () => {
   window.pause = true;
 };
 function insertMessage(message, posY = canvas.height / 2) {
-  window.message = message;
+  const messages = message.split("\n");
   context.font = "50px Arial";
-  textPosition = context.measureText(message).width;
   context.fillStyle = "white";
-  context.fillText(message, canvas.width / 2 - textPosition / 2, posY);
+  let prevTextHeight = 0;
+  let marginBlock = 50;
+  messages.forEach((msg, index) => {
+    textPosition = context.measureText(msg);
+    prevTextHeight =
+      posY -
+      textPosition.actualBoundingBoxAscent * messages.length +
+      textPosition.actualBoundingBoxAscent * index +
+      marginBlock * index;
+    context.fillText(
+      msg,
+      canvas.width / 2 - textPosition.width / 2,
+      prevTextHeight
+    );
+  });
 }
+
 function clearCanvas() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 }
+
 function isWin() {
   let condition = !blocks.find((_) => _ === 1);
   if (condition) window.gameOver = true;
   return condition;
 }
-function retry() {
-  canvas.onclick = () => location.reload();
+
+function setToInitialValue() {
+  window.platform = {
+    width: 0.2 * canvas.width,
+    height: 0.03 * canvas.height,
+    initialXPosition: canvas.width / 2 - (0.2 * canvas.width) / 2,
+    initialYPosition: canvas.height - 2 * (0.03 * canvas.height),
+    centerPlatform: canvas.width / 2,
+  };
+  window.xVelocity = 1;
+  window.yVelocity = 1;
+  window.xAccelerator = 0;
+  window.yAccelerator = 10;
+  window.score = 0;
+  window.message = "";
+  window.blocks = Array(BLOCK_COUNT).fill(1);
+  window.pause = false;
+  window.gameOver = false;
 }
