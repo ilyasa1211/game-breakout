@@ -18,8 +18,6 @@ export default class Paddle implements Rectangle, Drawable {
 
         const vbo: number | null = null;
         gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-        gl.bufferData(g.ARRAY_BUFFER, vertices.length, gl.STATIC_DRAW);
-
-                
+        gl.bufferData(gl.ARRAY_BUFFER, vertices.length, gl.STATIC_DRAW);
     }
 }

@@ -1,12 +1,19 @@
 export default class Game {
     private rafId: number | null = null;
+    private lastTime: number = 0;
 
-    public play(startTime: number) {
-        const endTime = Date.now();
-        const deltaTime = endTime - startTime;
+    private play(now: number) {
+        if (this.lastTime === 0) this.lastTime = now;
 
-        this.rafId = requestAnimationFrame(() => {
-            this.play(Date.now())
-        });
+        const deltaTime = now - this.lastTime;
+        this.lastTime = now;
+
+        
+
+        this.rafId = requestAnimationFrame(this.play);
+    }
+
+    public start() {
+        this.rafId = requestAnimationFrame(this.play);
     }
 }
