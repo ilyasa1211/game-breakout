@@ -1,23 +1,14 @@
-import type { Vec2 } from "../types/position";
-import type { Drawable } from "./interfaces/drawable";
-import type { Rectangle } from "./interfaces/rectangle";
+import { addComponent, addEntity, type IWorld } from "bitecs";
+import { Color } from "../components/color.ts";
+import { Rectangle } from "../components/shape.ts";
+import { Transform } from "../components/transform.ts";
 
-export default class Paddle implements Rectangle, Drawable {
-    private position: Vec2;
-    public constructor(position: Vec2) {
-        this.position = position;
-    }
+export const Paddle = (world: IWorld) => {
+  const entity = addEntity(world);
 
-    public draw(gl: WebGL2RenderingContext): void {
-        const vertices = new Float32Array([
-            -0.3, 0.3, 0.0,
-            0.3, 0.3, 0.0,
-            0.3, -0.3, 0.0,
-            -0.3, -0.3, 0.0,
-        ]);
+  addComponent(world, Transform, entity);
+  addComponent(world, Color, entity);
+  addComponent(world, Rectangle, entity);
 
-        const vbo: number | null = null;
-        gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices.length, gl.STATIC_DRAW);
-    }
-}
+  return entity;
+};

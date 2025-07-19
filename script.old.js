@@ -5,9 +5,9 @@ var body = document.body;
 var canvas = document.createElement("canvas");
 var context = canvas.getContext("2d");
 
-canvas.height = innerHeight;
-canvas.width = innerWidth;
-canvas.style.backgroundColor = "rgb(46,46,46)";
+// canvas.height = innerHeight;
+// canvas.width = innerWidth;
+// canvas.style.backgroundColor = "rgb(46,46,46)";
 
 body.appendChild(canvas);
 
