@@ -1,0 +1,14 @@
+const GameOver = {
+  LOSE: 0,
+  WIN: 1,
+};
+
+export class GameOverEvent extends CustomEvent<
+  (typeof GameOver)[keyof typeof GameOver]
+> {
+  public static readonly name = "game-over";
+}
+
+export class GameStartEvent extends CustomEvent<void> {
+  public static readonly name = "game-start";
+}

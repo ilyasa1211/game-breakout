@@ -11,6 +11,12 @@ export const KeyDown = {
 
 export const Control = {
   NONE: 0,
-  LEFT: 3,
-  RIGHT: 4,
+  LEFT: 1,
+  RIGHT: 2,
+} as const;
+
+export const Direction = {
+  NONE: 0,
+  LEFT: -1,
+  RIGHT: 1,
 } as const;

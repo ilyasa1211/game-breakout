@@ -29,12 +29,18 @@ export default function MainMenu(props: {
   return (
     <>
       <h1>Welcome to Breakout!</h1>
-      <div onClick={showLevelSelection}>Play</div>
+      <button type="button" onClick={showLevelSelection}>
+        Play
+      </button>
       {isLevelSelection &&
         levelDescriptor.map((level) => (
-          <div key={level.path} onClick={() => handleSelectLevel(level.level)}>
+          <button
+            type="button"
+            key={level.path}
+            onClick={() => handleSelectLevel(level.level)}
+          >
             <div>Level {level.level}</div>
-          </div>
+          </button>
         ))}
       {/* <div>Setting</div> */}
       {/* <div>Custom Level</div> */}

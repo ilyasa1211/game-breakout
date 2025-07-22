@@ -1,22 +1,30 @@
-import { createWorld, pipe } from "bitecs";
+import { createWorld, pipe, setDefaultSize } from "bitecs";
 import type { RefObject } from "preact";
+import Paddle from "./entities/paddle.ts";
 import { Control, KeyDown } from "./enums.ts";
+import { GameOverEvent, GameStartEvent } from "./events/game.ts";
 import { KeyDownEvent, KeyUpEvent } from "./events/input.ts";
-import fragmentSource from "./shaders/fragment.glsl?raw";
-import vertexSource from "./shaders/vertex.glsl?raw";
+import strings from "./strings.ts";
 import Movement from "./systems/movement.ts";
 import Render from "./systems/render.ts";
 import type { IGameWorld } from "./types.ts";
-import { createProgram, createShader } from "./utilities/webgl.ts";
+
+function checkGLError(gl: WebGL2RenderingContext, tag = "") {
+  const error = gl.getError();
+  if (error !== gl.NO_ERROR) {
+    console.error(`WebGL Error [${tag}]:`, error);
+  }
+}
 
 export default class Game extends EventTarget {
   private requestAnimationFrameId: number | null = null;
   private level;
   private lastTime: number = 0;
+  private isOver = false;
 
   private readonly canvas;
-  private readonly gl;
-  private readonly program;
+  // private readonly gl;
+  // private readonly program;
 
   private readonly world;
   private readonly pipeline;
@@ -39,39 +47,28 @@ export default class Game extends EventTarget {
     super();
     const canvas = canvasRef.current;
 
-    if (canvas === null) {
-      throw new TypeError("canvas is null");
+    if (!canvas) {
+      throw new TypeError(strings.CANVAS_IS_NULL);
     }
 
-    const gl = canvas.getContext("webgl2");
-
-    if (gl === null) {
-      throw new TypeError("Failed to initialize webgl2 context", {
-        cause: "Your browser didn't support webgl2 context",
-      });
-    }
-
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-    const program = createProgram(gl, vertexShader, fragmentShader);
-
-    gl.deleteShader(vertexShader);
-    gl.deleteShader(fragmentShader);
-    gl.useProgram(program);
-
-    this.program = program;
-    this.gl = gl;
     this.level = level;
     this.canvas = canvas;
 
     this.world = createWorld<IGameWorld>({
-      gl: this.gl,
-      program: this.program,
       deltaTime: 0,
       pressedKey: this.pressedKey,
     });
 
-    this.pipeline = pipe(Movement, Render);
+    new Paddle(this.world, {
+      x: this.canvas.width / (2 * this.canvas.width),
+      y: this.canvas.height / (2 * this.canvas.height),
+      width: 0.5,
+      height: 0.5,
+    });
+    // gl.bindVertexArray(null);
+    const renderSystem = new Render(canvas);
+
+    this.pipeline = pipe(Movement, renderSystem.update.bind(renderSystem));
 
     // init input listener
     this.addEventListener(KeyDownEvent.name, (e) => {
@@ -80,28 +77,51 @@ export default class Game extends EventTarget {
     this.addEventListener(KeyUpEvent.name, (e) => {
       this.onKeyUp((e as KeyUpEvent).detail);
     });
+
+    // init gameplay listener
+    this.addEventListener(
+      GameOverEvent.name,
+      (e) => {
+        // TODO: do somethind with e.detail, it has lose or win data
+        this.isOver = true;
+      },
+      {
+        once: true,
+      },
+    );
+    this.addEventListener(
+      GameStartEvent.name,
+      (e) => {
+        this.start();
+      },
+      {
+        once: true,
+      },
+    );
   }
 
   /**
    * Entry point, trigger the game loop
    */
   public start() {
+    if (this.isOver && this.requestAnimationFrameId) {
+      cancelAnimationFrame(this.requestAnimationFrameId);
+      return;
+    }
+
     this.requestAnimationFrameId = requestAnimationFrame((now) => {
       this.onUpdate(now);
       this.start(); // recursive
     });
   }
 
+  /**
+   * The game loop
+   * @param now
+   */
   private onUpdate(now: number) {
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     this.world.deltaTime = this.getDeltaTime(now);
     this.pipeline(this.world);
-  }
-
-  private onDestroy() {
-    if (this.requestAnimationFrameId) {
-      cancelAnimationFrame(this.requestAnimationFrameId);
-    }
   }
 
   private onKeyDown(ev: KeyboardEvent) {

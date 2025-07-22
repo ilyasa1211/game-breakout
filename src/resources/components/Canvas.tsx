@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef } from "preact/hooks";
+import { useContext, useEffect, useRef } from "preact/hooks";
 import { KeyDownEvent, KeyUpEvent } from "../../events/input.ts";
 import Game from "../../game.ts";
 import { CurrentLevelContext } from "../contexts/LevelContext.ts";
