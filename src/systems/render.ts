@@ -76,7 +76,7 @@ export default class Render<T extends IGameWorld = IGameWorld>
       false,
       2 * Float32Array.BYTES_PER_ELEMENT,
       0,
-    );
+    )
 
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);

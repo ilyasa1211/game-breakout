@@ -3,6 +3,8 @@ import { Color } from "../components/color.ts";
 import { Circle } from "../components/shape.ts";
 import { Transform } from "../components/transform.ts";
 
+// SpawnEntity(EntityInstance, count, world);
+
 export default class Ball<
   T extends IWorld,
   U extends {

@@ -1,4 +1,4 @@
-import { createWorld, pipe, setDefaultSize } from "bitecs";
+import { createWorld, pipe } from "bitecs";
 import type { RefObject } from "preact";
 import Paddle from "./entities/paddle.ts";
 import { Control, KeyDown } from "./enums.ts";
@@ -8,13 +8,6 @@ import strings from "./strings.ts";
 import Movement from "./systems/movement.ts";
 import Render from "./systems/render.ts";
 import type { IGameWorld } from "./types.ts";
-
-function checkGLError(gl: WebGL2RenderingContext, tag = "") {
-  const error = gl.getError();
-  if (error !== gl.NO_ERROR) {
-    console.error(`WebGL Error [${tag}]:`, error);
-  }
-}
 
 export default class Game extends EventTarget {
   private requestAnimationFrameId: number | null = null;

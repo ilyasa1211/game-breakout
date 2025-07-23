@@ -1,7 +1,6 @@
 import {
   type Dispatch,
   type StateUpdater,
-  useCallback,
   useContext,
   useState,
 } from "preact/hooks";
@@ -17,14 +16,14 @@ export default function MainMenu(props: {
   const [isLevelSelection, setIsLevelSelection] = useState<boolean>(false);
   const levelDescriptor = useContext(LevelDescriptorContext);
 
-  const showLevelSelection = useCallback((e: MouseEvent) => {
+  const showLevelSelection = () => {
     setIsLevelSelection(true);
-  }, []);
+  };
 
-  const handleSelectLevel = useCallback((level: number) => {
+  const handleSelectLevel = (level: number) => {
     setLevel(level);
     setState(entry.IN_GAME);
-  }, []);
+  };
 
   return (
     <>
