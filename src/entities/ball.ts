@@ -5,7 +5,7 @@ import { Transform } from "../components/transform.ts";
 
 // SpawnEntity(EntityInstance, count, world);
 
-export default class Ball<
+export default function Ball<
   T extends IWorld,
   U extends {
     /**
@@ -21,20 +21,18 @@ export default class Ball<
      */
     r: number;
   },
-> {
-  public constructor(world: T, props: U) {
-    const entity = addEntity(world);
+>(world: T, props: U) {
+  const entity = addEntity(world);
 
-    addComponent(world, Transform, entity);
-    addComponent(world, Color, entity);
-    addComponent(world, Circle, entity);
+  addComponent(world, Transform, entity);
+  addComponent(world, Color, entity);
+  addComponent(world, Circle, entity);
 
-    const { x, y, r } = props;
+  const { x, y, r } = props;
 
-    Transform.x[entity] = x;
-    Transform.y[entity] = y;
-    Circle.radius[entity] = r;
+  Transform.x[entity] = x;
+  Transform.y[entity] = y;
+  Circle.radius[entity] = r;
 
-    return entity;
-  }
+  return entity;
 }

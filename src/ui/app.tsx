@@ -1,13 +1,13 @@
 import { useState } from "preact/hooks";
 import "./css/app.css";
 import LevelDescriptor from "../levels/index.json" with { type: "json" };
+import { entry } from "../states.ts";
 import Canvas from "./components/Canvas.tsx";
 import MainMenu from "./components/MainMenu.tsx";
 import {
   CurrentLevelContext,
   LevelDescriptorContext,
 } from "./contexts/LevelContext.ts";
-import { entry } from "../states.ts";
 
 export function App() {
   const [entryState, setEntryState] = useState<

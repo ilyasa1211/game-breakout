@@ -1,5 +1,6 @@
 import { createWorld, pipe } from "bitecs";
 import type { RefObject } from "preact";
+import Ball from "./entities/ball.ts";
 import Paddle from "./entities/paddle.ts";
 import { Control, KeyDown } from "./enums.ts";
 import { GameOverEvent, GameStartEvent } from "./events/game.ts";
@@ -47,21 +48,58 @@ export default class Game extends EventTarget {
     this.level = level;
     this.canvas = canvas;
 
+    // createScene();
     this.world = createWorld<IGameWorld>({
+      renderMeta: {
+        ball: {
+          vao: null,
+          translationBuffer: null,
+          colorBuffer: null,
+        },
+        player: {
+          vao: null,
+          translationBuffer: null,
+          colorBuffer: null,
+        },
+        enemy: {
+          vao: null,
+          translationBuffer: null,
+          colorBuffer: null,
+        },
+      },
       deltaTime: 0,
       pressedKey: this.pressedKey,
     });
 
-    new Paddle(this.world, {
-      x: this.canvas.width / (2 * this.canvas.width),
-      y: this.canvas.height / (2 * this.canvas.height),
-      width: 0.5,
-      height: 0.5,
-    });
-    // gl.bindVertexArray(null);
-    const renderSystem = new Render(canvas);
+    console.log(canvas.clientWidth, canvas.clientHeight
+    );
 
-    this.pipeline = pipe(Movement, renderSystem.update.bind(renderSystem));
+    const playerHeight = 30;
+    const playerWidth = 100;
+    Paddle(this.world, {
+      x: 300,
+      y: 30,
+      width: playerWidth,
+      height: playerHeight,
+      color: {
+        r: 200,
+        g: 200,
+        b: 0,
+        a: 255,
+      },
+    });
+
+    Ball(this.world, {
+      r: 0.3,
+      x: 0.5,
+      y: 0.5,
+    });
+
+    this.pipeline = pipe(
+      ...[new Movement(canvas), new Render(canvas, this.world)].map((system) =>
+        system.update.bind(system),
+      ),
+    );
 
     // init input listener
     this.addEventListener(KeyDownEvent.name, (e) => {
@@ -84,7 +122,7 @@ export default class Game extends EventTarget {
     );
     this.addEventListener(
       GameStartEvent.name,
-      (e) => {
+      () => {
         this.start();
       },
       {
