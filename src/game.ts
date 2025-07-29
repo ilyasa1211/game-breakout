@@ -50,35 +50,16 @@ export default class Game extends EventTarget {
 
     // createScene();
     this.world = createWorld<IGameWorld>({
-      renderMeta: {
-        ball: {
-          vao: null,
-          translationBuffer: null,
-          colorBuffer: null,
-        },
-        player: {
-          vao: null,
-          translationBuffer: null,
-          colorBuffer: null,
-        },
-        enemy: {
-          vao: null,
-          translationBuffer: null,
-          colorBuffer: null,
-        },
-      },
+      isStarted: false,
       deltaTime: 0,
       pressedKey: this.pressedKey,
     });
 
-    console.log(canvas.clientWidth, canvas.clientHeight
-    );
-
-    const playerHeight = 30;
     const playerWidth = 100;
-    Paddle(this.world, {
-      x: 300,
-      y: 30,
+    const playerHeight = 30;
+    const player = new Paddle(this.world, {
+      x: canvas.clientWidth / 2 - playerWidth / 2,
+      y: canvas.clientHeight - playerHeight * 3,
       width: playerWidth,
       height: playerHeight,
       color: {
@@ -89,15 +70,23 @@ export default class Game extends EventTarget {
       },
     });
 
-    Ball(this.world, {
-      r: 0.3,
-      x: 0.5,
-      y: 0.5,
+    const ballRadius = 10;
+    const ballOffsetCenter = 80;
+    const ball = new Ball(this.world, {
+      r: ballRadius,
+      x: canvas.clientWidth / 2,
+      y: canvas.clientHeight / 2 + ballOffsetCenter,
+      color: {
+        r: 0,
+        g: 255,
+        b: 0,
+        a: 255,
+      },
     });
 
     this.pipeline = pipe(
-      ...[new Movement(canvas), new Render(canvas, this.world)].map((system) =>
-        system.update.bind(system),
+      ...[new Movement(canvas), new Render(canvas, [player, ball])].map(
+        (system) => system.update.bind(system),
       ),
     );
 
