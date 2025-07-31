@@ -1,11 +1,8 @@
 {
+  "$schema": "./schema.json",
   "blocks": [
-    {
-      "hardness": 1
-    },
-    null,
-    {
-      "hardness": 1
-    }
+    1,
+    1,
+    1
   ]
 }

@@ -1,19 +1,8 @@
-import { defineQuery } from "bitecs";
-import { Color } from "../components/color.ts";
-import { Player } from "../components/player.ts";
-import { Circle, Rectangle } from "../components/shape.ts";
-import { Transform } from "../components/transform.ts";
-import settings from "../settings.ts";
 import fragmentSource from "../shaders/fragment.glsl?raw";
 import vertexSource from "../shaders/vertex.glsl?raw";
 import strings from "../strings.ts";
 import type { IGameWorld, IRenderable, ISystem } from "../types.ts";
-import { mat2 } from "../utilities/matrix.ts";
 import { createProgram, createShader } from "../utilities/webgl.ts";
-
-const renderEnemyQuery = defineQuery([Rectangle, Transform]);
-const renderPlayerQuery = defineQuery([Rectangle, Transform, Player]);
-const renderBallQuery = defineQuery([Circle, Transform]);
 
 export default class Render<T extends IGameWorld = IGameWorld>
   implements ISystem<T>

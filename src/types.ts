@@ -29,3 +29,5 @@ export interface IRenderable<
   ): void;
   updateRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): void;
 }
+
+export interface IEntity {};

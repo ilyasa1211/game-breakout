@@ -1,6 +1,6 @@
 import { defineQuery } from "bitecs";
 import { Player } from "../components/player.ts";
-import { Circle, Rectangle } from "../components/shape.ts";
+import { Rectangle } from "../components/shape.ts";
 import { Transform } from "../components/transform.ts";
 import { Velocity } from "../components/velocity.ts";
 import { Weapon } from "../components/weapon.ts";
@@ -60,11 +60,11 @@ export default class Movement<T extends IGameWorld = IGameWorld>
         const x = Transform.x[ballId];
         const y = Transform.y[ballId];
 
+        // follow the player if it hasn't started
         if (!isStarted && typeof playerId !== "undefined") {
           Transform.x[ballId] = Transform.x[playerId] + Rectangle.width[playerId] / 2;
           return;
         }
-
       })();
     }
 

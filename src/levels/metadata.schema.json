@@ -1,0 +1,23 @@
+{
+  "title": "Level Metadata",
+  "type": "object",
+  "properties": {
+    "levels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "path": {
+            "description": "Path to the actual json containing level data",
+            "type": "string",
+            "pattern": "[0-9].json$"
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,7 +8,10 @@ import { KeyDownEvent, KeyUpEvent } from "./events/input.ts";
 import strings from "./strings.ts";
 import Movement from "./systems/movement.ts";
 import Render from "./systems/render.ts";
-import type { IGameWorld } from "./types.ts";
+import type { IGameWorld, IRenderable } from "./types.ts";
+import LevelMetadata from "./levels/metadata.json" with { type: "json" };
+import levelType from "./levels/level.typescript.example.json" with { type: "json"};
+import settings from "./settings.ts";
 
 export default class Game extends EventTarget {
   private requestAnimationFrameId: number | null = null;
@@ -16,12 +19,8 @@ export default class Game extends EventTarget {
   private lastTime: number = 0;
   private isOver = false;
 
-  private readonly canvas;
-  // private readonly gl;
-  // private readonly program;
-
   private readonly world;
-  private readonly pipeline;
+  private pipeline: ((...input: any[]) => any) | undefined;
 
   /**
    * Multiple pressed key
@@ -46,9 +45,6 @@ export default class Game extends EventTarget {
     }
 
     this.level = level;
-    this.canvas = canvas;
-
-    // createScene();
     this.world = createWorld<IGameWorld>({
       isStarted: false,
       deltaTime: 0,
@@ -84,10 +80,12 @@ export default class Game extends EventTarget {
       },
     });
 
-    this.pipeline = pipe(
-      ...[new Movement(canvas), new Render(canvas, [player, ball])].map(
-        (system) => system.update.bind(system),
-      ),
+    this.generateEnemiesFromLevel(this.level, this.world, canvas).then(enemies =>
+      this.pipeline = pipe(
+        ...[new Movement(canvas), new Render(canvas, [player, ball, enemies])].map(
+          (system) => system.update.bind(system),
+        ),
+      )
     );
 
     // init input listener
@@ -119,6 +117,57 @@ export default class Game extends EventTarget {
       },
     );
   }
+  public async generateEnemiesFromLevel<T extends IGameWorld>(level: number, world: T, canvas: HTMLCanvasElement): Promise<IRenderable> {
+    // I'm trying to create 10 blocks for each row and have 4 rows
+    const gapX = 10;
+    const gapY = 10;
+    const maxEnemiesPerRow = 10;
+    const enemyWidth = (canvas.clientWidth - gapX * maxEnemiesPerRow) / maxEnemiesPerRow;
+    const enemyHeight = 30;
+
+    /**
+     * contaguous memory of x, y, w, h, and hardness
+     */
+    const enemies: number[] = [];
+    const levelMeta = LevelMetadata.levels.find(l => l.level === level);
+
+    if (typeof levelMeta === "undefined") {
+      throw new Error(`level ${level} is not found in metadata`);
+    }
+
+    const levelData: Omit<typeof levelType, "$schema"> = await import(`../levels/${levelMeta.path}`);
+    const enemiesCount = levelData.blocks.length;
+
+
+    /**
+     * Use Instancing!
+     */
+
+    return new (class <T extends IGameWorld = IGameWorld> implements IRenderable {
+      private vao: WebGLVertexArrayObject | undefined;
+
+      public constructor(world: T) {
+      }
+
+      public initRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, attribute: { aTransLoc: GLint; aPosLoc: GLint; aColorLoc: GLint; aRotationLoc: GLint; }): void {
+        const {
+          aColorLoc,
+          aPosLoc,
+          aRotationLoc,
+          aTransLoc
+        } = attribute;
+
+        // position x, y, x1, y1
+        // color based on hardness
+
+        this.vao = vao;
+      }
+
+      public updateRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): void {
+
+      }
+    })(world);
+  }
 
   /**
    * Entry point, trigger the game loop
@@ -141,7 +190,7 @@ export default class Game extends EventTarget {
    */
   private onUpdate(now: number) {
     this.world.deltaTime = this.getDeltaTime(now);
-    this.pipeline(this.world);
+    this.pipeline?.call(null, this.world);
   }
 
   private onKeyDown(ev: KeyboardEvent) {

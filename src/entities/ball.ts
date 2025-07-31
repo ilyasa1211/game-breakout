@@ -3,7 +3,7 @@ import { Color } from "../components/color.ts";
 import { Circle } from "../components/shape.ts";
 import { Transform } from "../components/transform.ts";
 import settings from "../settings.ts";
-import type { IRenderable } from "../types.ts";
+import type { IEntity, IRenderable } from "../types.ts";
 import { clipSpaceToWorldCoordinate } from "../utilities/coordinate.ts";
 import { mat2 } from "../utilities/matrix.ts";
 import { Velocity } from "../components/velocity.ts";
@@ -33,7 +33,7 @@ export default class Ball<
       a: number;
     };
   },
-> implements IRenderable
+> implements IRenderable, IEntity
 {
   private readonly id: number;
   private vao: WebGLVertexArrayObject | undefined;

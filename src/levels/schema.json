@@ -1,0 +1,16 @@
+{
+  "title": "Level",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": -1 
+      },
+      "minItems": 3,
+      "maxItems": 20
+    }
+  }
+}
