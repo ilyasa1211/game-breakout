@@ -8,10 +8,8 @@ import { KeyDownEvent, KeyUpEvent } from "./events/input.ts";
 import strings from "./strings.ts";
 import Movement from "./systems/movement.ts";
 import Render from "./systems/render.ts";
-import type { IGameWorld, IRenderable } from "./types.ts";
-import LevelMetadata from "./levels/metadata.json" with { type: "json" };
-import levelType from "./levels/level.typescript.example.json" with { type: "json"};
-import settings from "./settings.ts";
+import type { IGameWorld } from "./types.ts";
+import { generateEnemiesFromLevel } from "./utilities/level.ts";
 
 export default class Game extends EventTarget {
   private requestAnimationFrameId: number | null = null;
@@ -51,27 +49,28 @@ export default class Game extends EventTarget {
       pressedKey: this.pressedKey,
     });
 
-    const playerWidth = 100;
-    const playerHeight = 30;
+    const playerWidth = canvas.clientWidth / 7;
+    const playerHeight = canvas.clientHeight / 14;
+    const playerY = canvas.clientHeight - playerHeight * 3;
+
     const player = new Paddle(this.world, {
       x: canvas.clientWidth / 2 - playerWidth / 2,
-      y: canvas.clientHeight - playerHeight * 3,
+      y: playerY,
       width: playerWidth,
       height: playerHeight,
       color: {
-        r: 200,
-        g: 200,
+        r: 255,
+        g: 255,
         b: 0,
         a: 255,
       },
     });
 
-    const ballRadius = 10;
-    const ballOffsetCenter = 80;
+    const ballRadius = 15;
     const ball = new Ball(this.world, {
       r: ballRadius,
       x: canvas.clientWidth / 2,
-      y: canvas.clientHeight / 2 + ballOffsetCenter,
+      y: playerY - 4 * ballRadius,
       color: {
         r: 0,
         g: 255,
@@ -80,7 +79,7 @@ export default class Game extends EventTarget {
       },
     });
 
-    this.generateEnemiesFromLevel(this.level, this.world, canvas).then(enemies =>
+    generateEnemiesFromLevel(this.level, this.world, canvas).then(enemies =>
       this.pipeline = pipe(
         ...[new Movement(canvas), new Render(canvas, [player, ball, enemies])].map(
           (system) => system.update.bind(system),
@@ -116,57 +115,6 @@ export default class Game extends EventTarget {
         once: true,
       },
     );
-  }
-  public async generateEnemiesFromLevel<T extends IGameWorld>(level: number, world: T, canvas: HTMLCanvasElement): Promise<IRenderable> {
-    // I'm trying to create 10 blocks for each row and have 4 rows
-    const gapX = 10;
-    const gapY = 10;
-    const maxEnemiesPerRow = 10;
-    const enemyWidth = (canvas.clientWidth - gapX * maxEnemiesPerRow) / maxEnemiesPerRow;
-    const enemyHeight = 30;
-
-    /**
-     * contaguous memory of x, y, w, h, and hardness
-     */
-    const enemies: number[] = [];
-    const levelMeta = LevelMetadata.levels.find(l => l.level === level);
-
-    if (typeof levelMeta === "undefined") {
-      throw new Error(`level ${level} is not found in metadata`);
-    }
-
-    const levelData: Omit<typeof levelType, "$schema"> = await import(`../levels/${levelMeta.path}`);
-    const enemiesCount = levelData.blocks.length;
-
-
-    /**
-     * Use Instancing!
-     */
-
-    return new (class <T extends IGameWorld = IGameWorld> implements IRenderable {
-      private vao: WebGLVertexArrayObject | undefined;
-
-      public constructor(world: T) {
-      }
-
-      public initRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement, attribute: { aTransLoc: GLint; aPosLoc: GLint; aColorLoc: GLint; aRotationLoc: GLint; }): void {
-        const {
-          aColorLoc,
-          aPosLoc,
-          aRotationLoc,
-          aTransLoc
-        } = attribute;
-
-        // position x, y, x1, y1
-        // color based on hardness
-
-        this.vao = vao;
-      }
-
-      public updateRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): void {
-
-      }
-    })(world);
   }
 
   /**

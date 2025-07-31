@@ -86,7 +86,7 @@ export default class Ball<
   ): void {
     const { aColorLoc, aPosLoc, aRotationLoc, aTransLoc } = attribute;
 
-    const triangleCounts = settings.TRIANGLES_COUNT_FOR_FULL_CIRCLE;
+    const triangleCounts = settings.BALL_ROUNDNESS;
 
     const x = Transform.x[this.id];
     const y = Transform.y[this.id];
@@ -212,7 +212,7 @@ export default class Ball<
     gl.drawArraysInstanced(
       gl.TRIANGLE_FAN,
       0,
-      settings.TRIANGLES_COUNT_FOR_FULL_CIRCLE + 2,
+      settings.BALL_ROUNDNESS + 2,
       1,
     );
 

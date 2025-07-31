@@ -56,26 +56,6 @@ export default class Render<T extends IGameWorld = IGameWorld>
       entity.updateRender(gl, this.canvas);
     }
 
-    // Draw Ball
-    // if (ball.vao) {
-    //   gl.bindVertexArray(ball.vao);
-    //   // gl.bindBuffer(gl.ARRAY_BUFFER, ball.positionBuffer);
-    //   const ballId = renderBallQuery(world).at(0) as number;
-    //   const x = Transform.x[ballId];
-    //   const y = Transform.y[ballId];
-    //   gl.drawElementsInstanced(gl.TRIANGLES, settings.TRIANGLES_COUNT_FOR_FULL_CIRCLE * 3, gl.UNSIGNED_BYTE, 0, 1);
-    // }
-
-    // Draw Enemies
-    // if (enemy.vao) {
-    //   gl.bindVertexArray(enemy.vao);
-    //   for (const enemyId of renderEnemyQuery(world)) {
-    //   }
-    //   gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0, 1);
-
-    //   gl.bindVertexArray(null);
-    // }
-
     return world;
   }
 }

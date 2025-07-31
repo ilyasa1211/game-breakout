@@ -81,15 +81,10 @@ export default class Paddle<
     const xT = ((x - x0) * 2) / canvas.clientWidth;
     const yT = ((y0 - y) * 2) / canvas.clientHeight;
 
-    // const xT = 0;
-    // const yT = 0;
-
     // Bottom-right in clip space
     console.log(w + x);
     const x1 = (w + x0) / this.canvas.clientWidth * 2 - 1;
     const y1 = 1 - (h + y0) / this.canvas.clientHeight * 2;
-    // const x1 = 0.5;
-    // const y1 = -0.5;
 
     const color = new Float32Array([
       Color.r[this.id] / 255,
@@ -108,9 +103,6 @@ export default class Paddle<
       x1,
       y1,
     ]);
-
-    console.log(x, y, w, h);
-    console.log(shapePosition);
 
     const indices = new Uint8Array([0, 1, 2, 2, 1, 3]);
 

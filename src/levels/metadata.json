@@ -3,11 +3,11 @@
     "levels": [
       {
         "level": 1,
-        "path": "1.json"
+        "path": "1"
       },
       {
         "level": 2,
-        "path": "2.json"
+        "path": "2"
       }
     ]
   }

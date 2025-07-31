@@ -36,36 +36,32 @@ export default class Movement<T extends IGameWorld = IGameWorld>
     const playerId = movementPlayerQuery(world).at(0);
     const ballId = movementWeaponQuery(world).at(0);
 
-    if (typeof playerId !== "undefined") {
-      (() => {
-        const x = Transform.x[playerId];
-        const w = Rectangle.width[playerId];
+    player: if (typeof playerId !== "undefined") {
+      const x = Transform.x[playerId];
+      const w = Rectangle.width[playerId];
 
-        if (x < 0) {
-          Transform.x[playerId] = 0;
-          return;
-        }
+      if (x < 0) {
+        Transform.x[playerId] = 0;
+        break player;
+      }
 
-        if (x + w > this.canvas.clientWidth) {
-          Transform.x[playerId] = this.canvas.clientWidth - w;
-          return;
-        }
+      if (Math.ceil(x + w) > this.canvas.clientWidth) {
+        Transform.x[playerId] = this.canvas.clientWidth - Math.ceil(w);
+        break player;
+      }
 
-        Transform.x[playerId] += direction * settings.PLAYER_SPEED * deltaTime;
-      })();
+      Transform.x[playerId] += direction * settings.PLAYER_SPEED * deltaTime;
     }
 
-    if (typeof ballId !== "undefined") {
-      (() => {
-        const x = Transform.x[ballId];
-        const y = Transform.y[ballId];
+    ball: if (typeof ballId !== "undefined") {
+      const x = Transform.x[ballId];
+      const y = Transform.y[ballId];
 
-        // follow the player if it hasn't started
-        if (!isStarted && typeof playerId !== "undefined") {
-          Transform.x[ballId] = Transform.x[playerId] + Rectangle.width[playerId] / 2;
-          return;
-        }
-      })();
+      // follow the player if it hasn't started
+      if (!isStarted && typeof playerId !== "undefined") {
+        Transform.x[ballId] = Transform.x[playerId] + Rectangle.width[playerId] / 2;
+        break ball;
+      }
     }
 
     return world;
