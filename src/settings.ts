@@ -1,7 +1,7 @@
 export default {
   BACKGROUND_COLOR: [],
   BALL_ROUNDNESS: 12,
-  PLAYER_SPEED: 2 / 3,
+  PLAYER_SPEED: 1200,
   BLOCK_COLORS: [
     [0, 0, 0, 0], // transparent
     [255, 255, 0, 255], // yellow

@@ -3,7 +3,7 @@ import type { RefObject } from "preact";
 import Ball from "./entities/ball.ts";
 import Paddle from "./entities/paddle.ts";
 import { Control, KeyDown } from "./enums.ts";
-import { GameOverEvent, GameStartEvent } from "./events/game.ts";
+import { GameOverEvent, GameReadyEvent, GameStartEvent } from "./events/game.ts";
 import { KeyDownEvent, KeyUpEvent } from "./events/input.ts";
 import strings from "./strings.ts";
 import Movement from "./systems/movement.ts";
@@ -71,6 +71,8 @@ export default class Game extends EventTarget {
       r: ballRadius,
       x: canvas.clientWidth / 2,
       y: playerY - 4 * ballRadius,
+      xV: 0,
+      yV: 600, 
       color: {
         r: 0,
         g: 255,
@@ -107,7 +109,7 @@ export default class Game extends EventTarget {
       },
     );
     this.addEventListener(
-      GameStartEvent.name,
+      GameReadyEvent.name,
       () => {
         this.start();
       },
@@ -115,6 +117,13 @@ export default class Game extends EventTarget {
         once: true,
       },
     );
+
+    this.addEventListener(
+      GameReadyEvent.name,
+      () => {
+        this.world.isStarted = true
+      }
+    )
   }
 
   /**
@@ -164,6 +173,8 @@ export default class Game extends EventTarget {
       case KeyDown.D:
         this.pressedKey[Control.RIGHT] = false;
         break;
+      case KeyDown.SPACE:
+        this.dispatchEvent(new GameReadyEvent());
     }
   }
 
@@ -173,6 +184,6 @@ export default class Game extends EventTarget {
     const deltaTime = now - this.lastTime;
     this.lastTime = now;
 
-    return deltaTime;
+    return deltaTime / 1000;
   }
 }

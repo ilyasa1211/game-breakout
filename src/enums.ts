@@ -7,6 +7,7 @@ export const KeyDown = {
   ARROW_RIGHT: "ArrowRight",
   ARROW_UP: "ArrowUp",
   ARROW_DOWN: "ArrowDown",
+  SPACE: " ",
 } as const;
 
 export const Control = {

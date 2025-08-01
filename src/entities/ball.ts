@@ -9,11 +9,18 @@ import { mat2 } from "../utilities/matrix.ts";
 import { Velocity } from "../components/velocity.ts";
 import { Weapon } from "../components/weapon.ts";
 
-// SpawnEntity(EntityInstance, count, world);
 
 export default class Ball<
   T extends IWorld,
   U extends {
+    /**
+     * x velocity
+     */
+    xV: number;
+    /**
+     * y velocity
+     */
+    yV: number;
     /**
      * x axis in grid unit not pixel
      */
@@ -52,7 +59,7 @@ export default class Ball<
     addComponent(world, Velocity, entity);
     addComponent(world, Weapon, entity);
 
-    const { x, y, r, color } = props;
+    const { x, y, r, color, xV, yV } = props;
 
     Transform.x[entity] = x;
     Transform.y[entity] = y;
@@ -61,6 +68,8 @@ export default class Ball<
     Color.g[entity] = color.g;
     Color.b[entity] = color.b;
     Color.a[entity] = color.a;
+    Velocity.x[entity] = xV;
+    Velocity.y[entity] = yV;
 
     this.id = entity;
   }
