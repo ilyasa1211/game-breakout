@@ -14,11 +14,14 @@ export default class Render<T extends IGameWorld = IGameWorld>
   public constructor(canvas: HTMLCanvasElement, entities: IRenderable[]) {
     this.canvas = canvas;
 
-    const gl = canvas.getContext("webgl2");
+    const gl = canvas.getContext("webgl2", {
+      antialias: true 
+    });
 
     if (!gl) {
       throw new TypeError(strings.GL_IS_NULL);
     }
+
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);

@@ -178,6 +178,10 @@ export default class Game extends EventTarget {
     }
   }
 
+  /**
+   * @param now 
+   * @returns {number} in miliseconds
+   */
   private getDeltaTime(now: number) {
     if (this.lastTime === 0) this.lastTime = now;
 

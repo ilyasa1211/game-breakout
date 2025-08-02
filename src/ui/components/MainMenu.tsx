@@ -32,7 +32,7 @@ export default function MainMenu(props: {
         Play
       </button>
       {isLevelSelection &&
-        levelDescriptor.map((level) => (
+        levelDescriptor.levels.map((level) => (
           <button
             type="button"
             key={level.path}

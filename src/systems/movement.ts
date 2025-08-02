@@ -8,9 +8,11 @@ import { Control, Direction } from "../enums.ts";
 import settings from "../settings.ts";
 import type { IGameWorld, ISystem } from "../types.ts";
 import { clamp } from "../utilities/common.ts";
+import { Touhgness } from "../components/toughness.ts";
 
-const movementPlayerQuery = defineQuery([Transform, Player]);
-const movementWeaponQuery = defineQuery([Transform, Velocity, Weapon]);
+const enemyQuery = defineQuery([Transform, Touhgness]);
+const playerQuery = defineQuery([Transform, Player]);
+const weaponQuery = defineQuery([Transform, Velocity, Weapon]);
 const hasTouched = new Map<string, boolean>();
 
 export default class Movement<T extends IGameWorld = IGameWorld>
@@ -35,8 +37,8 @@ export default class Movement<T extends IGameWorld = IGameWorld>
       direction += Direction.LEFT;
     }
 
-    const playerId = movementPlayerQuery(world).at(0);
-    const ballId = movementWeaponQuery(world).at(0);
+    const playerId = playerQuery(world).at(0);
+    const ballId = weaponQuery(world).at(0);
 
     player: if (typeof playerId !== "undefined") {
       const x = Transform.x[playerId];
@@ -122,13 +124,45 @@ export default class Movement<T extends IGameWorld = IGameWorld>
         if (distanceSq <= r * r && !(hasTouched.get(checkedKey) ?? false)) {
           hasTouched.set(checkedKey, true);
           Velocity.x[ballId] = (player.x + player.w / 2 - x) * -10;
-          Velocity.y[ballId] = -yV;
+          Velocity.y[ballId] = -Math.abs(yV);
           break playerCollision;
         }
 
         hasTouched.set(checkedKey, false);
       }
 
+      enemyCollision: for (const enemyId of enemyQuery(world)) {
+        const checkedKey = `enemy-${enemyId}`;
+        const toughness = Touhgness.t[enemyId];
+
+        if (toughness <= 0) {
+          continue;
+        }
+
+        const enemy = {
+          toughness: Touhgness.t[enemyId],
+          x: Transform.x[enemyId],
+          y: Transform.y[enemyId],
+          w: Rectangle.width[enemyId],
+          h: Rectangle.height[enemyId],
+        };
+        
+        const nearestX = clamp(enemy.x, x, enemy.x + enemy.w);
+        const nearestY = clamp(enemy.y, y, enemy.y + enemy.h);
+
+        const dx = x - nearestX;
+        const dy = y - nearestY;
+
+        const distanceSq = dx * dx + dy * dy;
+
+        if (distanceSq <= r * r && !(hasTouched.get(checkedKey) ?? false)) {
+          hasTouched.set(checkedKey, true);
+          Velocity.y[ballId] = -yV;
+          Touhgness.t[enemyId] -= 1;
+          break enemyCollision;
+        }
+        hasTouched.set(checkedKey, false);
+      }
       Transform.x[ballId] += Velocity.x[ballId] * deltaTime;
       Transform.y[ballId] += Velocity.y[ballId] * deltaTime;
     }

@@ -17,14 +17,14 @@ export function App() {
 
   return (
     <LevelDescriptorContext value={LevelDescriptor}>
-      {/* {entryState === entry.IN_MENU && (
+      {entryState === entry.IN_MENU && (
         <MainMenu setState={setEntryState} setLevel={setLevel} />
       )}
-      {entryState === entry.IN_GAME && ( */}
-      <CurrentLevelContext value={level}>
-        <Canvas />
-      </CurrentLevelContext>
-      {/* )} */}
+      {entryState === entry.IN_GAME && (
+        <CurrentLevelContext value={level}>
+          <Canvas />
+        </CurrentLevelContext>
+      )}
     </LevelDescriptorContext>
   );
 }

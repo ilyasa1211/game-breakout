@@ -4,11 +4,13 @@ import settings from "../settings.ts";
 import { mat2 } from "../utilities/matrix.ts";
 import { clipSpaceToWorldCoordinate } from "../utilities/coordinate.ts";
 import type { IGameWorld, IRenderable } from "../types.ts";
-import { addComponent, addEntity } from "bitecs";
+import { addComponent, addEntity, defineQuery } from "bitecs";
 import { Transform } from "../components/transform.ts";
 import { Color } from "../components/color.ts";
 import { Rectangle } from "../components/shape.ts";
 import { Touhgness } from "../components/toughness.ts";
+
+const enemyQuery = defineQuery([Transform, Touhgness, Rectangle]);
 
 export async function generateEnemiesFromLevel<T extends IGameWorld>(level: number, world: T, canvas: HTMLCanvasElement): Promise<IRenderable> {
   const levelMeta = LevelMetadata.levels.find(l => l.level === level);
@@ -34,6 +36,7 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(level: numb
     // private readonly maxEnemiesPerRow;
     private readonly widthPxEachEntity;
     private readonly heightPxEachEntity;
+    private colorBuffer: WebGLBuffer | undefined;
 
     public constructor(world: T, canvas: HTMLCanvasElement, {
       maxEnemiesPerRow = settings.MAX_ENEMIES_PER_ROW,
@@ -69,12 +72,15 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(level: numb
         const y = row * (this.heightPxEachEntity + gapYPx) + gapYPx / 2;
 
         addComponent(world, Transform, id);
+        addComponent(world, Touhgness, id);
         addComponent(world, Color, id);
         addComponent(world, Rectangle, id);
 
         Touhgness.t[id] = toughness;
         Transform.x[id] = x;
         Transform.y[id] = y;
+        Rectangle.width[id] = this.widthPxEachEntity;
+        Rectangle.height[id] = this.heightPxEachEntity;
 
         this.entityIds.push(id);
       }
@@ -174,10 +180,24 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(level: numb
       gl.bindVertexArray(null);
 
       this.vao = vao;
+      this.colorBuffer = colorBuffer;
     }
 
     public updateRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): void {
       if (typeof this.vao === "undefined") return;
+
+      if (typeof this.colorBuffer === "undefined") {
+        throw new Error("propery color buffer is undefined");
+      }
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+
+      for (const [i, enemyId] of enemyQuery(world).entries()) {
+        const toughness = Touhgness.t[enemyId];
+        const color = (settings.BLOCK_COLORS.at(toughness) ?? settings.BLOCK_COLORS.at(-1))?.map(c => c / 255) as number[];
+
+        gl.bufferSubData(gl.ARRAY_BUFFER, i * 4 * Float32Array.BYTES_PER_ELEMENT, new Float32Array(color));
+      }
 
       gl.bindVertexArray(this.vao);
       gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0, this.entityIds.length);
