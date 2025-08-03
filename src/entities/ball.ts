@@ -2,13 +2,12 @@ import { addComponent, addEntity, type IWorld } from "bitecs";
 import { Color } from "../components/color.ts";
 import { Circle } from "../components/shape.ts";
 import { Transform } from "../components/transform.ts";
-import settings from "../settings.ts";
-import type { IEntity, IRenderable } from "../types.ts";
-import { clipSpaceToWorldCoordinate } from "../utilities/coordinate.ts";
-import { mat2 } from "../utilities/matrix.ts";
 import { Velocity } from "../components/velocity.ts";
 import { Weapon } from "../components/weapon.ts";
-
+import settings from "../settings.ts";
+import type { IRenderable } from "../types.ts";
+import { clipSpaceToWorldCoordinate } from "../utilities/coordinate.ts";
+import { mat2 } from "../utilities/matrix.ts";
 
 export default class Ball<
   T extends IWorld,
@@ -40,7 +39,7 @@ export default class Ball<
       a: number;
     };
   },
-> implements IRenderable, IEntity
+> implements IRenderable
 {
   private readonly id: number;
   private vao: WebGLVertexArrayObject | undefined;
@@ -131,7 +130,7 @@ export default class Ball<
     gl.bufferData(
       gl.ARRAY_BUFFER,
       new Float32Array(circleVertices),
-      gl.STATIC_DRAW,
+      gl.DYNAMIC_DRAW,
     );
     gl.enableVertexAttribArray(aPosLoc);
     gl.vertexAttribPointer(
@@ -218,12 +217,7 @@ export default class Ball<
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo.translationBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array([xT, yT]));
 
-    gl.drawArraysInstanced(
-      gl.TRIANGLE_FAN,
-      0,
-      settings.BALL_ROUNDNESS + 2,
-      1,
-    );
+    gl.drawArraysInstanced(gl.TRIANGLE_FAN, 0, settings.BALL_ROUNDNESS + 2, 1);
 
     gl.bindVertexArray(this.vao);
   }

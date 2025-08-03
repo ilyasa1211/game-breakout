@@ -1,5 +1,5 @@
 {
-  "$schema": "./schema.json",
+  "$schema": "../schemas/level.schema.json",
   "blocks": [
     1,
     1,

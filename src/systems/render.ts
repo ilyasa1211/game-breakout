@@ -1,3 +1,4 @@
+import settings from "../settings.ts";
 import fragmentSource from "../shaders/fragment.glsl?raw";
 import vertexSource from "../shaders/vertex.glsl?raw";
 import strings from "../strings.ts";
@@ -15,13 +16,12 @@ export default class Render<T extends IGameWorld = IGameWorld>
     this.canvas = canvas;
 
     const gl = canvas.getContext("webgl2", {
-      antialias: true 
+      antialias: false, // remove blurry edge
     });
 
     if (!gl) {
       throw new TypeError(strings.GL_IS_NULL);
     }
-
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
@@ -33,15 +33,24 @@ export default class Render<T extends IGameWorld = IGameWorld>
 
     this.gl = gl;
 
-    gl.clearColor(71 / 255, 107 / 255, 74 / 255, 1.0);
+    const attribute = {
+      aTransLoc: gl.getAttribLocation(program, "aTranslation"),
+      aPosLoc: gl.getAttribLocation(program, "aPos"),
+      aColorLoc: gl.getAttribLocation(program, "aColor"),
+      aRotationLoc: gl.getAttribLocation(program, "aRotation"),
+    };
+
+    gl.clearColor(
+      ...(settings.BACKGROUND_COLOR.map((v) => v / 255) as [
+        number,
+        number,
+        number,
+        number,
+      ]),
+    );
 
     for (const entity of entities) {
-      entity.initRender(gl, canvas, {
-        aTransLoc: gl.getAttribLocation(program, "aTranslation"),
-        aPosLoc: gl.getAttribLocation(program, "aPos"),
-        aColorLoc: gl.getAttribLocation(program, "aColor"),
-        aRotationLoc: gl.getAttribLocation(program, "aRotation"),
-      });
+      entity.initRender(gl, canvas, attribute);
     }
 
     this.renderableEntities = entities;

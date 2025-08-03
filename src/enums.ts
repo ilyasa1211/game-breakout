@@ -21,3 +21,8 @@ export const Direction = {
   LEFT: -1,
   RIGHT: 1,
 } as const;
+
+export const GameOverStatus = {
+  LOSE: 0,
+  WIN: 1,
+} as const;

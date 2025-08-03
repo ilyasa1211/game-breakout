@@ -1,6 +1,7 @@
 import { defineQuery } from "bitecs";
 import { Player } from "../components/player.ts";
 import { Circle, Rectangle } from "../components/shape.ts";
+import { Touhgness } from "../components/toughness.ts";
 import { Transform } from "../components/transform.ts";
 import { Velocity } from "../components/velocity.ts";
 import { Weapon } from "../components/weapon.ts";
@@ -8,15 +9,15 @@ import { Control, Direction } from "../enums.ts";
 import settings from "../settings.ts";
 import type { IGameWorld, ISystem } from "../types.ts";
 import { clamp } from "../utilities/common.ts";
-import { Touhgness } from "../components/toughness.ts";
 
 const enemyQuery = defineQuery([Transform, Touhgness]);
 const playerQuery = defineQuery([Transform, Player]);
-const weaponQuery = defineQuery([Transform, Velocity, Weapon]);
+const weaponQuery = defineQuery([Transform, Circle, Velocity, Weapon]);
 const hasTouched = new Map<string, boolean>();
 
 export default class Movement<T extends IGameWorld = IGameWorld>
-  implements ISystem<T> {
+  implements ISystem<T>
+{
   private readonly canvas;
 
   public constructor(canvas: HTMLCanvasElement) {
@@ -29,7 +30,6 @@ export default class Movement<T extends IGameWorld = IGameWorld>
     let direction: (typeof Direction)[keyof typeof Direction] = Direction.NONE;
 
     // if both key is pressed, just stay
-
     if (pressedKey[Control.RIGHT]) {
       direction += Direction.RIGHT;
     }
@@ -66,18 +66,22 @@ export default class Movement<T extends IGameWorld = IGameWorld>
 
       // follow the player if it hasn't started
       if (!isStarted && typeof playerId !== "undefined") {
-        Transform.x[ballId] = Transform.x[playerId] + Rectangle.width[playerId] / 2;
+        Transform.x[ballId] =
+          Transform.x[playerId] + Rectangle.width[playerId] / 2;
         break ball;
       }
 
       borderCollision: {
         const checkedKey = {
-          top: 'border-top',
-          left: 'border-left',
-          right: 'border-right',
+          top: "border-top",
+          left: "border-left",
+          right: "border-right",
         };
 
-        if (Math.ceil(x + r) > this.canvas.clientWidth && !(hasTouched.get(checkedKey.right) ?? false)) {
+        if (
+          Math.ceil(x + r) > this.canvas.clientWidth &&
+          !(hasTouched.get(checkedKey.right) ?? false)
+        ) {
           hasTouched.set(checkedKey.right, true);
           Velocity.x[ballId] = -xV;
           break borderCollision;
@@ -90,11 +94,6 @@ export default class Movement<T extends IGameWorld = IGameWorld>
           break borderCollision;
         }
         hasTouched.set(checkedKey.left, false);
-
-        // if (y > this.canvas.clientHeight) {
-        //   Transform.x[ballId] = this.canvas.clientWidth - Math.ceil(r);
-        //   break borderCollision;
-        // }
 
         if (y - r < 0 && !(hasTouched.get(checkedKey.top) ?? false)) {
           hasTouched.set(checkedKey.top, true);
@@ -127,11 +126,10 @@ export default class Movement<T extends IGameWorld = IGameWorld>
           Velocity.y[ballId] = -Math.abs(yV);
           break playerCollision;
         }
-
         hasTouched.set(checkedKey, false);
       }
 
-      enemyCollision: for (const enemyId of enemyQuery(world)) {
+      for (const enemyId of enemyQuery(world)) {
         const checkedKey = `enemy-${enemyId}`;
         const toughness = Touhgness.t[enemyId];
 
@@ -146,7 +144,7 @@ export default class Movement<T extends IGameWorld = IGameWorld>
           w: Rectangle.width[enemyId],
           h: Rectangle.height[enemyId],
         };
-        
+
         const nearestX = clamp(enemy.x, x, enemy.x + enemy.w);
         const nearestY = clamp(enemy.y, y, enemy.y + enemy.h);
 
@@ -159,7 +157,7 @@ export default class Movement<T extends IGameWorld = IGameWorld>
           hasTouched.set(checkedKey, true);
           Velocity.y[ballId] = -yV;
           Touhgness.t[enemyId] -= 1;
-          break enemyCollision;
+          break;
         }
         hasTouched.set(checkedKey, false);
       }

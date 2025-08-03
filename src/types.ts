@@ -1,8 +1,7 @@
 import type { Control } from "./enums.ts";
 
-const entity = ["player", "enemy", "ball"] as const;
-
 export type IGameWorld = {
+  eventTarget: EventTarget;
   isStarted: boolean;
   deltaTime: number;
   pressedKey: {
@@ -29,5 +28,3 @@ export interface IRenderable<
   ): void;
   updateRender(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement): void;
 }
-
-export interface IEntity {};

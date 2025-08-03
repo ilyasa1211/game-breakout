@@ -1,4 +1,5 @@
 import { useContext, useEffect, useRef } from "preact/hooks";
+import { GameReadyEvent } from "../../events/game.ts";
 import { KeyDownEvent, KeyUpEvent } from "../../events/input.ts";
 import Game from "../../game.ts";
 import { CurrentLevelContext } from "../contexts/LevelContext.ts";
@@ -16,7 +17,7 @@ export default function Canvas() {
       );
       addEventListener("keyup", (ev) => game.dispatchEvent(new KeyUpEvent(ev)));
 
-      game.start();
+      game.dispatchEvent(new GameReadyEvent());
     }
   }, [level, canvasRef]);
 

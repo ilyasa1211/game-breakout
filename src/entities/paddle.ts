@@ -82,8 +82,8 @@ export default class Paddle<
     const yT = ((y0 - y) * 2) / canvas.clientHeight;
 
     // Bottom-right in clip space
-    const x1 = (w + x0) / this.canvas.clientWidth * 2 - 1;
-    const y1 = 1 - (h + y0) / this.canvas.clientHeight * 2;
+    const x1 = ((w + x0) / this.canvas.clientWidth) * 2 - 1;
+    const y1 = 1 - ((h + y0) / this.canvas.clientHeight) * 2;
 
     const color = new Float32Array([
       Color.r[this.id] / 255,

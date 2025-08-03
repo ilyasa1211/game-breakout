@@ -14,7 +14,7 @@
           "path": {
             "description": "Path to the actual json containing level data",
             "type": "string",
-            "pattern": "[0-9].json$"
+            "pattern": "^[0-9]$"
           }
         }
       }

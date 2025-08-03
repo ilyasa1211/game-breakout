@@ -10,7 +10,7 @@
         "exclusiveMinimum": -1 
       },
       "minItems": 3,
-      "maxItems": 20
+      "maxItems": 100 
     }
   }
 }

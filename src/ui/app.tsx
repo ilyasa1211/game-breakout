@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import "./css/app.css";
-import LevelDescriptor from "../levels/metadata.json" with { type: "json" };
+import LevelDescriptor from "../levels/level.metadata.json";
 import { entry } from "../states.ts";
 import Canvas from "./components/Canvas.tsx";
 import MainMenu from "./components/MainMenu.tsx";

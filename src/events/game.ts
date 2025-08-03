@@ -1,14 +1,25 @@
-const GameOver = {
-  LOSE: 0,
-  WIN: 1,
-};
+import { GameOverStatus } from "../enums.ts";
 
-export class GameOverEvent extends CustomEvent<
-  (typeof GameOver)[keyof typeof GameOver]
-> {
+export class GameOverEvent<
+  T = (typeof GameOverStatus)[keyof typeof GameOverStatus],
+> extends CustomEvent<T> {
   public static readonly name = "game-over";
-  public constructor() {
-    super(GameOverEvent.name);
+  private readonly status;
+
+  public constructor(detail: T) {
+    super(GameOverEvent.name, {
+      detail,
+    });
+
+    this.status = detail;
+  }
+
+  public isWin(): boolean {
+    return this.status === GameOverStatus.WIN;
+  }
+
+  public isLose(): boolean {
+    return this.status === GameOverStatus.LOSE;
   }
 }
 

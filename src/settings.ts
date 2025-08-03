@@ -1,22 +1,32 @@
 export default {
-  BACKGROUND_COLOR: [],
+  BACKGROUND_COLOR: [71, 125, 125, 255],
   BALL_ROUNDNESS: 12,
+  BALL_RADIUS: 15,
   PLAYER_SPEED: 1200,
-  BLOCK_COLORS: [
+  /**
+   * In pixel
+   */
+  ENEMY_WIDTH: 100,
+  /**
+   * In pixel
+   */
+  ENEMY_HEIGHT: 30,
+  /**
+   * In pixel
+   */
+  ENEMY_GAP_X: 30,
+  /**
+   * In pixel
+   */
+  ENEMY_GAP_Y: 30,
+  /**
+   * Based on tougness of the enemy
+   */
+  ENEMY_COLOS: [
     [0, 0, 0, 0], // transparent
     [255, 255, 0, 255], // yellow
     [0, 255, 0, 255], // green
     [0, 0, 255, 255], // blue
     [255, 0, 255, 255], // purple
   ],
-  MAX_ENEMIES_PER_ROW: 10,
-  MAX_ENEMIES_PER_COLUMN: 7,
-  /**
-   * In pixel
-   */
-  ENEMIES_GAP_X: 50,
-  /**
-   * In pixel
-   */
-  ENEMIES_GAP_Y: 50,
 } as const;
