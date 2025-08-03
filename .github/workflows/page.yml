@@ -1,47 +1,54 @@
-name: Deploy to Github Pages
+name: Deploy to github page
 
 on:
   push:
-    branches: 
-      - master
+    branches:
       - main
-  workflow_dispatch: 
+  pull_request:
+    branches: 
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v3
 
-      # - name: Build static files
-        # id: build
-        # run: |
-        #   <Not provided for brevity>
-        #   At a minimum this step should build the static files of your site
-        #   <Not provided for brevity>
+    - uses: pnpm/action-setup@v4
+      name: Install pnpm
+      with:
+        version: 10
+        run_install: false
 
-      - name: Upload static files as artifact
-        id: deployment
-        uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
-        with:
-          path: .
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4
+      with:
+        cache: 'pnpm'
 
+    - name: Build
+      run: |
+        pnpm i
+        pnpm run build:github
+
+    - name: Upload static files as artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./dist
+      
   deploy:
-    needs:
-      - build
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+    needs: build
+    runs-on: ubuntu-latest
 
-    # Deploy to the github-pages environment
+    permissions:
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+        uses: actions/deploy-pages@v4
