@@ -1,0 +1,13 @@
+  {
+    "$schema": "../schemas/level.metadata.schema.json",
+    "levels": [
+      {
+        "level": 1,
+        "path": "1"
+      },
+      {
+        "level": 2,
+        "path": "2"
+      }
+    ]
+  }
