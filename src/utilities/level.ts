@@ -3,10 +3,10 @@ import { Color } from "../components/color.ts";
 import { Rectangle } from "../components/shape.ts";
 import { Touhgness } from "../components/toughness.ts";
 import { Transform } from "../components/transform.ts";
+import LevelMetadata from "../levels/level.metadata.json";
 import levelType from "../schemas/level.typescript.example.json" with {
   type: "json",
 };
-import LevelMetadata from "../levels/level.metadata.json";
 import settings from "../settings.ts";
 import type { IGameWorld, IRenderable } from "../types.ts";
 import { clipSpaceToWorldCoordinate } from "./coordinate.ts";
@@ -26,7 +26,7 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(
   }
 
   const levelData: Omit<typeof levelType, "$schema"> = await import(
-    `../levels/level-${levelMeta.path}.json`,
+    `../levels/level-${levelMeta.path}.json`
     // {
     //   with: {
     //     type: "json",

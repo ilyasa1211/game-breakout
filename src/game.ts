@@ -2,7 +2,7 @@ import { createWorld, pipe } from "bitecs";
 import type { RefObject } from "preact";
 import Ball from "./entities/ball.ts";
 import Paddle from "./entities/paddle.ts";
-import { Control, GameOverStatus, KeyDown } from "./enums.ts";
+import { Control, KeyDown } from "./enums.ts";
 import {
   GameOverEvent,
   GameReadyEvent,
@@ -105,17 +105,17 @@ export default class Game extends EventTarget {
     });
   }
 
-  private onGameOver(evt: GameOverEvent) {
+  private onGameOver(event: GameOverEvent) {
     this.isOver = true;
 
-    switch (evt.detail) {
-      case GameOverStatus.WIN:
-        alert("You Win!");
-        break;
+    if (event.isWin()) {
+      alert("You Win!");
+      return;
+    }
 
-      case GameOverStatus.LOSE:
-        alert("You Lose!");
-        break;
+    if (event.isLose()) {
+      alert("You Lose!");
+      return;
     }
   }
 
@@ -126,18 +126,26 @@ export default class Game extends EventTarget {
     const playerWidth = canvas.clientWidth / 7;
     const playerHeight = canvas.clientHeight / 14;
     const playerY = canvas.clientHeight - playerHeight * 3;
+    const playerColor = {
+      r: settings.PLAYER_COLOR[0],
+      g: settings.PLAYER_COLOR[1],
+      b: settings.PLAYER_COLOR[2],
+      a: settings.PLAYER_COLOR[3],
+    };
+
+    const ballColor = {
+      r: settings.BALL_COLOR[0],
+      g: settings.BALL_COLOR[1],
+      b: settings.BALL_COLOR[2],
+      a: settings.BALL_COLOR[3],
+    };
 
     const player = new Paddle(this.world, {
       x: canvas.clientWidth / 2 - playerWidth / 2,
       y: playerY,
       width: playerWidth,
       height: playerHeight,
-      color: {
-        r: 255,
-        g: 255,
-        b: 0,
-        a: 255,
-      },
+      color: playerColor,
     });
 
     const ball = new Ball(this.world, {
@@ -146,12 +154,7 @@ export default class Game extends EventTarget {
       y: playerY - 4 * settings.BALL_RADIUS,
       xV: 0,
       yV: 600,
-      color: {
-        r: 0,
-        g: 255,
-        b: 0,
-        a: 255,
-      },
+      color: ballColor,
     });
 
     const enemies = await generateEnemiesFromLevel(

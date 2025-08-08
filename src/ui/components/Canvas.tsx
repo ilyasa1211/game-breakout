@@ -23,7 +23,7 @@ export default function Canvas() {
 
   return (
     <>
-      <h2>Level {level}</h2>
+      <h1>Level {level}</h1>
       <canvas ref={canvasRef} className="min-w-[400px] w-[80vw]"></canvas>
     </>
   );

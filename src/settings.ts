@@ -1,8 +1,10 @@
 export default {
-  BACKGROUND_COLOR: [71, 125, 125, 255],
+  BACKGROUND_COLOR: [69, 69, 69, 255],
   BALL_ROUNDNESS: 12,
   BALL_RADIUS: 15,
+  BALL_COLOR: [255, 150, 150, 255],
   PLAYER_SPEED: 1200,
+  PLAYER_COLOR: [255, 255, 255, 255],
   /**
    * In pixel
    */
@@ -24,7 +26,7 @@ export default {
    */
   ENEMY_COLOS: [
     [0, 0, 0, 0], // transparent
-    [255, 255, 0, 255], // yellow
+    [255, 255, 100, 255], // yellow
     [0, 255, 0, 255], // green
     [0, 0, 255, 255], // blue
     [255, 0, 255, 255], // purple
