@@ -109,12 +109,12 @@ export default class Game extends EventTarget {
     this.isOver = true;
 
     if (event.isWin()) {
-      alert("You Win!");
+      alert(strings.GAME_OVER_MESSAGE_WIN);
       return;
     }
 
     if (event.isLose()) {
-      alert("You Lose!");
+      alert(strings.GAME_OVER_MESSAGE_LOSE);
       return;
     }
   }
@@ -152,8 +152,8 @@ export default class Game extends EventTarget {
       r: settings.BALL_RADIUS,
       x: canvas.clientWidth / 2,
       y: playerY - 4 * settings.BALL_RADIUS,
-      xV: 0,
-      yV: 600,
+      xV: settings.BALL_INITIAL_X_VELOCITY,
+      yV: settings.BALL_INITIAL_Y_VELOCITY,
       color: ballColor,
     });
 
