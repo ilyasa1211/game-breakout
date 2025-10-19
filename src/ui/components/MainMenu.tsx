@@ -27,7 +27,8 @@ export default function MainMenu(props: {
 
   return (
     <>
-      <h1>Welcome to Breakout!</h1>
+    <h1>Welcome to Breakout!</h1>
+        <div class="grid grid-cols-2 gap-3">
       <button type="button" onClick={showLevelSelection}>
         Play
       </button>
@@ -41,8 +42,9 @@ export default function MainMenu(props: {
             <div>Level {level.level}</div>
           </button>
         ))}
+        </div>
       {/* <div>Setting</div> */}
       {/* <div>Custom Level</div> */}
-    </>
+      </>
   );
 }

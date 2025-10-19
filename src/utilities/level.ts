@@ -27,11 +27,6 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(
 
   const levelData: Omit<typeof levelType, "$schema"> = await import(
     `../levels/level-${levelMeta.path}.json`
-    // {
-    //   with: {
-    //     type: "json",
-    //   },
-    // }
   );
 
   /**
@@ -51,8 +46,7 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(
       world: T,
       canvas: HTMLCanvasElement,
       {
-        enemyWidth = settings.ENEMY_WIDTH,
-        enemyHeight = settings.ENEMY_HEIGHT,
+        enemyCountPerRow = settings.ENEMY_COUNT_PER_ROW,
         gapXPx = settings.ENEMY_GAP_X,
         gapYPx = settings.ENEMY_GAP_Y,
       }: Partial<{
@@ -64,29 +58,17 @@ export async function generateEnemiesFromLevel<T extends IGameWorld>(
          * Vertical gap between enemies in pixel
          */
         gapYPx: number;
-        /**
-         * Width of each enemy in pixel
-         */
-        enemyWidth: number;
-        /**
-         * Height of each enemy in pixel
-         */
-        enemyHeight: number;
+        enemyCountPerRow: number;
       }> = {},
     ) {
-      this.enemyWidth = enemyWidth;
-      this.enemyHeight = enemyHeight;
-
-      const maxEnemiesPerRow = Math.floor(
-        canvas.clientWidth / (enemyWidth + gapXPx),
-      );
-      console.log(maxEnemiesPerRow);
+      this.enemyWidth = (canvas.clientWidth - gapXPx * enemyCountPerRow) / enemyCountPerRow;
+      this.enemyHeight = this.enemyWidth / 3;
 
       for (const [i, toughness] of levelData.blocks.entries()) {
         const id = addEntity(world);
 
-        const row = Math.floor(i / maxEnemiesPerRow);
-        const column = i % maxEnemiesPerRow;
+        const row = Math.floor(i / enemyCountPerRow);
+        const column = i % enemyCountPerRow;
 
         const x = column * (this.enemyWidth + gapXPx) + gapXPx / 2;
         const y = row * (this.enemyHeight + gapYPx) + gapYPx / 2;

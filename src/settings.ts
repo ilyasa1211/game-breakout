@@ -5,14 +5,8 @@ export default {
   BALL_COLOR: [255, 150, 150, 255],
   PLAYER_SPEED: 1200,
   PLAYER_COLOR: [255, 255, 255, 255],
-  /**
-   * In pixel
-   */
-  ENEMY_WIDTH: 100,
-  /**
-   * In pixel
-   */
-  ENEMY_HEIGHT: 30,
+
+  ENEMY_COUNT_PER_ROW: 10,
   /**
    * In pixel
    */
